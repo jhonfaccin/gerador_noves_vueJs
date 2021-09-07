@@ -21,7 +21,7 @@
 											<div class="col-md">
 												{{prefix}}
 											</div>
-											<div class="col-md-1 text-right">
+											<div class="col-md text-end">
 												<button class="btn btn-info" v-on:click="deletePrefix(prefix)"><span class="fa fa-trash"></span></button>
 											</div>
 										</div>
@@ -49,7 +49,7 @@
 											<div class="col md">
 												{{sufix}}
 											</div>
-											<div class="col-md-1 text-right">
+											<div class="col-md text-end">
 												<button class="btn btn-info" v-on:click="deleteSufix(sufix)"><span class="fa fa-trash"></span></button>
 											</div>
 										</div>
@@ -72,7 +72,16 @@
                         <div class="card-body">
                             <ul class="list-group">
                                 <li class="list-group-item" v-for="domain in domains" v-bind:key="domain">
-									{{ domain }}
+									<div class="row">
+										<div class="col-md">
+											{{ domain.name }}
+										</div>
+										<div class="col-md text-end">
+											<a class="btn btn-info" v-bind:href="domain.checkout" target="_blanck">
+												<span class="fa fa-shopping-cart"></span>
+											</a>
+										</div>
+									</div>
 								</li>
                             </ul>
                         </div>
@@ -94,36 +103,41 @@ export default {
 			prefix: "",
 			sufix: "",
 			prefixes: ["Air", "Jet", "Flight"],
-			sufixes: ["Hub", "Station", "Mart"],
-			domains: ["AirHub","AirStation","AirMart","JetHub","JetStation","JetMart","FlightHub","FlighStation","FlightMart"]
+			sufixes: ["Hub", "Station", "Mart"]
 		};
 	},
 	methods:{
 		addPrefix(prefix){
 			this.prefixes.push(prefix);
 			this.prefix = "";
-			this.generate();
 		},
 		addSufix(sufix){
 			this.sufixes.push(sufix);
 			this.sufix = "";
-			this.generate();
-		},
-		generate(){
-			this.domains = [];
-			for (const prefix of this.prefixes){
-				for (const sufix of this.sufixes){
-					this.domains.push(prefix + sufix);
-				}
-			}
 		},
 		deletePrefix(prefix){
 			this.prefixes.splice(this.prefixes.indexOf(prefix),1);
-			this.generate();
 		},
 		deleteSufix(sufix){
 			this.sufixes.splice(this.sufixes.indexOf(sufix),1);
-			this.generate();
+		}
+	},
+	computed:{
+		domains(){
+			console.log("generating domais...");
+			const domains = [];
+			for (const prefix of this.prefixes){
+				for (const sufix of this.sufixes){
+					const name = prefix + sufix;
+					const url = name.toLowerCase();
+					const checkout = `https://checkout.hostgator.com.br/?a=add&sld=${url}&tld=.com.br`;
+					domains.push({
+						name,
+						checkout
+					});
+				}
+			}
+			return domains;
 		}
 	}
 };
